@@ -38,6 +38,8 @@ class KNNModel:
         test_element_size = len(test_element)
         training_data_size = len(self.data)
         distance_list = []
+
+        # find euclidean distance
         for i in range(training_data_size):
             distance = 0.0
             for j in range(test_element_size):
@@ -57,6 +59,7 @@ class KNNModel:
 
         # Find the predicted type
         predicted_type = max(types_of_nearest_neighbors, key=types_of_nearest_neighbors.count)
+
         return predicted_type
 
 
