@@ -104,6 +104,7 @@ def main():
     else:
         print("They are one in the same.")
 
+
 # While not required, it is considered good practice to have
 # a main function and use this syntax to call it.
 if __name__ == "__main__":
