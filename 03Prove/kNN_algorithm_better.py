@@ -71,9 +71,9 @@ class KNNClassifier:
         return KNNModel(data, targets)
 
 
-def get_data_UCI_Car_Evaluation():
+def get_data_uci_car_evaluation():
     headers = ["buying", "maint", "doors", "persons", "lug_boot", "safety"]
-    df = pd.read_csv("UCI_Car_Evaluation.csv", header=None, names=headers, index_col=False)
+    df = pd.read_csv("Datasets/UCI_Car_Evaluation.csv", header=None, names=headers, index_col=False)
 
     # replace values in all columns using a dictionary (not currently working)
     #cleanup_nums = {"buying": {"v-high": 4, "high": 3, "med": 2, "low": 1}}
@@ -90,8 +90,18 @@ def get_data_UCI_Car_Evaluation():
     return df.values
 
 
+def get_data_pima_indians_diabetes():
+    headers = ["num_pregnant", "plasma_glucose_con", "diastolic_bp", "tri_thickness",
+               "2hr_serum_insulin", "bmi", "diabetes_pedigree_function", "age", "class"]
+    df = pd.read_csv("Datasets/Pima_Indians_Diabetes.txt", header=None, names=headers, index_col=False)
+
+    print(df.head(15))
+    return np.zeros(1)
+
+
 def main():
-    get_data_UCI_Car_Evaluation()
+    get_data_uci_car_evaluation()
+    get_data_pima_indians_diabetes()
 
 
 # While not required, it is considered good practice to have
