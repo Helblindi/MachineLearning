@@ -73,7 +73,10 @@ class KNNClassifier:
 
 def get_data_uci_car_evaluation():
     headers = ["buying", "maint", "doors", "persons", "lug_boot", "safety"]
-    df = pd.read_csv("Datasets/UCI_Car_Evaluation.csv", header=None, names=headers, index_col=False)
+    df = pd.read_csv("Datasets/UCI_Car_Evaluation.csv",
+                     header=None,
+                     names=headers,
+                     index_col=False)
 
     # replace values in all columns using a dictionary (not currently working)
     #cleanup_nums = {"buying": {"v-high": 4, "high": 3, "med": 2, "low": 1}}
@@ -93,15 +96,46 @@ def get_data_uci_car_evaluation():
 def get_data_pima_indians_diabetes():
     headers = ["num_pregnant", "plasma_glucose_con", "diastolic_bp", "tri_thickness",
                "2hr_serum_insulin", "bmi", "diabetes_pedigree_function", "age", "class"]
-    df = pd.read_csv("Datasets/Pima_Indians_Diabetes.txt", header=None, names=headers, index_col=False)
+    df = pd.read_csv("Datasets/Pima_Indians_Diabetes.txt",
+                     header=None,
+                     names=headers,
+                     index_col=False)
 
-    print(df.head(15))
-    return np.zeros(1)
+    df['plasma_glucose_con'].replace(to_replace=[0], value=[np.nan], inplace=True)
+    df['diastolic_bp'].replace(to_replace=[0], value=[np.nan], inplace=True)
+    df['tri_thickness'].replace(to_replace=[0], value=[np.nan], inplace=True)
+    df['2hr_serum_insulin'].replace(to_replace=[0], value=[np.nan], inplace=True)
+    df['bmi'].replace(to_replace=[0], value=[np.nan], inplace=True)
+    df['diabetes_pedigree_function'].replace(to_replace=[0], value=[np.nan], inplace=True)
+    df['age'].replace(to_replace=[0], value=[np.nan], inplace=True)
+
+    return df.values
+
+
+def get_data_automobile_mpg():
+    headers = ["mpg", "cylinders", "displacement", "horsepower", "weight",
+               "acceleration", "model_year", "origin", "car_name"]
+    df = pd.read_csv("Datasets/Automobile_MPG.txt",
+                     header=None,
+                     names=headers,
+                     na_values="?",
+                     delim_whitespace=True,
+                     index_col=False)
+
+    # Need to move mpg to be the last column and drop the car_names
+    # column, as it does not provide valuable information
+    columnTitles = ["cylinders", "displacement", "horsepower", "weight",
+               "acceleration", "model_year", "origin", "mpg"]
+    df = df.reindex(columns=columnTitles)
+    print(df)
+
+    return df.values
 
 
 def main():
     get_data_uci_car_evaluation()
     get_data_pima_indians_diabetes()
+    get_data_automobile_mpg()
 
 
 # While not required, it is considered good practice to have
