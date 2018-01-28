@@ -73,6 +73,7 @@ def main():
     # Load the data set
     iris = datasets.load_iris()
     data_set = iris.data
+    print(data_set)
     target_set = iris.target
 
     # Get the train data and the test data

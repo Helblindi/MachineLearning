@@ -83,12 +83,12 @@ def get_data_uci_car_evaluation():
     #df.replace(to_replace=cleanup_nums, inplace=True)
 
     # replace each column 1 by 1
-    df['buying'].replace(to_replace=['vhigh', 'high', 'med', 'low'], value=[4, 3, 2, 1], inplace=True)
-    df['maint'].replace(to_replace=['vhigh', 'high', 'med', 'low'], value=[4, 3, 2, 1], inplace=True)
-    df['doors'].replace(to_replace=['2', '3', '4', '5more'], value=[1, 2, 3, 4], inplace=True)
-    df['persons'].replace(to_replace=['2', '4', 'more'], value=[1, 2, 3], inplace=True)
-    df['lug_boot'].replace(to_replace=['small', 'med', 'big'], value=[1, 2, 3], inplace=True)
-    df['safety'].replace(to_replace=['low', 'med', 'high'], value=[1, 2, 3], inplace=True)
+    df['buying'].replace(to_replace=['vhigh', 'high', 'med', 'low'], value=[4.0, 3.0, 2.0, 1.0], inplace=True)
+    df['maint'].replace(to_replace=['vhigh', 'high', 'med', 'low'], value=[4.0, 3.0, 2.0, 1.0], inplace=True)
+    df['doors'].replace(to_replace=['2', '3', '4', '5more'], value=[1.0, 2.0, 3.0, 4.0], inplace=True)
+    df['persons'].replace(to_replace=['2', '4', 'more'], value=[1.0, 2.0, 3.0], inplace=True)
+    df['lug_boot'].replace(to_replace=['small', 'med', 'big'], value=[1.0, 2.0, 3.0], inplace=True)
+    df['safety'].replace(to_replace=['low', 'med', 'high'], value=[1.0, 2.0, 3.0], inplace=True)
 
     return df.values
 
@@ -124,18 +124,17 @@ def get_data_automobile_mpg():
 
     # Need to move mpg to be the last column and drop the car_names
     # column, as it does not provide valuable information
-    columnTitles = ["cylinders", "displacement", "horsepower", "weight",
-               "acceleration", "model_year", "origin", "mpg"]
-    df = df.reindex(columns=columnTitles)
-    print(df)
+    column_titles = ["cylinders", "displacement", "horsepower", "weight",
+                     "acceleration", "model_year", "origin", "mpg"]
+    df = df.reindex(columns=column_titles)
 
     return df.values
 
 
 def main():
-    get_data_uci_car_evaluation()
-    get_data_pima_indians_diabetes()
-    get_data_automobile_mpg()
+    data_car_evaluation = get_data_uci_car_evaluation()
+    data_pima_indians_diabetes = get_data_pima_indians_diabetes()
+    data_automobile_mpg = get_data_automobile_mpg()
 
 
 # While not required, it is considered good practice to have
