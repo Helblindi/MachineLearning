@@ -5,6 +5,7 @@ from sklearn import svm
 from operator import itemgetter
 from sklearn.neighbors import KNeighborsClassifier
 import pandas as pd
+import numpy as np
 
 def get_accuracy(predicted, expected):
     """
@@ -131,29 +132,24 @@ def get_data_automobile_mpg():
     df = pd.read_csv("Datasets/Automobile_MPG.txt",
                      header=None,
                      names=headers,
+                     na_values='?',
                      delim_whitespace=True,
                      index_col=False)
 
-    # returns the mode of each column
-    modes = df.mode().values[0]
+    # drop the car_name column per it does not appear to contain any valuable information
+    df = df.drop("car_name", axis=1)
 
-    # replace missing value in the horsepower column with the mode of the column
-    df['horsepower'].replace(to_replace=['?'], value=[float(modes[3])], inplace=True)
-    df = df.convert_objects(convert_numeric=True)
+    df = pd.get_dummies(df, columns=['origin'])
 
-    # Need to move mpg to be the last column and drop the car_names
-    # column, as it does not provide valuable information
-    column_titles = ["cylinders", "displacement", "horsepower", "weight",
-                     "acceleration", "model_year", "origin", "mpg"]
-    df = df.reindex(columns=column_titles)
+    # drop the rows with NA values as it only accounts for 2% of the data
+    df.dropna(inplace=True)
 
-    # convert the dataframe to a numpy array
-    array = df.values
+    # convert dataframe to numpy arrrays and return
+    target = np.array(df["mpg"])
+    data = np.array(df.drop("mpg", axis=1))
 
     # return the train data and the target data from the array
-    # the first returns all columns but the last column
-    # the last returns just the last column
-    return array[:, :-1], array[:, -1]
+    return data, target
 
 
 def main():
@@ -183,14 +179,27 @@ def main():
                          train_size=0.7,
                          shuffle=True)
 
+    # run our own kNN algorithm on the data
     classifier = KNNClassifier()
     model = classifier.fit(data_train, target_train)
-
-    print(data_test)
-    # get predicted targets
     knn_targets_predicted = model.predict(data_test)
     custom_algorithm_accuracy = get_accuracy(knn_targets_predicted, target_test) * 100.0
     print("Custom Algorithm was %.3f percent accurate." % custom_algorithm_accuracy)
+
+    # Compare with an existing algorithm
+    classifier = KNeighborsClassifier(n_neighbors=3)
+    model = classifier.fit(data_train, target_train)
+    knn_existing_algorithm_predictions = model.predict(data_test)
+    existing_algorithm_accuracy = get_accuracy(knn_existing_algorithm_predictions, target_test) * 100.0
+    print("Existing Algorithm was %i percent accurate." % existing_algorithm_accuracy)
+
+    # Determine the better algorithm
+    if custom_algorithm_accuracy > existing_algorithm_accuracy:
+        print("Custom algorithm was superior!")
+    elif existing_algorithm_accuracy > custom_algorithm_accuracy:
+        print("You lose. Good day sir.")
+    else:
+        print("They are one in the same.")
 
 
 # While not required, it is considered good practice to have
