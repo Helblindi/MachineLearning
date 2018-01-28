@@ -1,10 +1,10 @@
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_val_score
+from sklearn import svm
 from operator import itemgetter
 from sklearn.neighbors import KNeighborsClassifier
 import pandas as pd
-import numpy as np
-
 
 def get_accuracy(predicted, expected):
     """
@@ -72,15 +72,11 @@ class KNNClassifier:
 
 
 def get_data_uci_car_evaluation():
-    headers = ["buying", "maint", "doors", "persons", "lug_boot", "safety"]
+    headers = ["buying", "maint", "doors", "persons", "lug_boot", "safety", "class"]
     df = pd.read_csv("Datasets/UCI_Car_Evaluation.csv",
                      header=None,
                      names=headers,
                      index_col=False)
-
-    # replace values in all columns using a dictionary (not currently working)
-    #cleanup_nums = {"buying": {"v-high": 4, "high": 3, "med": 2, "low": 1}}
-    #df.replace(to_replace=cleanup_nums, inplace=True)
 
     # replace each column 1 by 1
     df['buying'].replace(to_replace=['vhigh', 'high', 'med', 'low'], value=[4.0, 3.0, 2.0, 1.0], inplace=True)
@@ -89,8 +85,15 @@ def get_data_uci_car_evaluation():
     df['persons'].replace(to_replace=['2', '4', 'more'], value=[1.0, 2.0, 3.0], inplace=True)
     df['lug_boot'].replace(to_replace=['small', 'med', 'big'], value=[1.0, 2.0, 3.0], inplace=True)
     df['safety'].replace(to_replace=['low', 'med', 'high'], value=[1.0, 2.0, 3.0], inplace=True)
+    df['class'].replace(to_replace=['unacc', 'acc', 'good', 'vgood'], value=[1.0, 2.0, 3.0, 4.0], inplace=True)
 
-    return df.values, np.zeros(1)
+    # convert the dataframe to a numpy array
+    array = df.values
+
+    # return the train data and the target data from the array
+    # the first returns all columns but the last column
+    # the last returns just the last column
+    return array[:,:-1], array[:,-1]
 
 
 def get_data_pima_indians_diabetes():
@@ -101,15 +104,25 @@ def get_data_pima_indians_diabetes():
                      names=headers,
                      index_col=False)
 
-    df['plasma_glucose_con'].replace(to_replace=[0], value=[np.nan], inplace=True)
-    df['diastolic_bp'].replace(to_replace=[0], value=[np.nan], inplace=True)
-    df['tri_thickness'].replace(to_replace=[0], value=[np.nan], inplace=True)
-    df['2hr_serum_insulin'].replace(to_replace=[0], value=[np.nan], inplace=True)
-    df['bmi'].replace(to_replace=[0], value=[np.nan], inplace=True)
-    df['diabetes_pedigree_function'].replace(to_replace=[0], value=[np.nan], inplace=True)
-    df['age'].replace(to_replace=[0], value=[np.nan], inplace=True)
+    # replace the null values with the mode of each column
+    # returns the mode of each column
+    modes = df.mode().values[0]
 
-    return df.values, np.zeros(1)
+    df['plasma_glucose_con'].replace(to_replace=[0], value=[modes[1]], inplace=True)
+    df['diastolic_bp'].replace(to_replace=[0], value=[modes[2]], inplace=True)
+    df['tri_thickness'].replace(to_replace=[0], value=[modes[3]], inplace=True)
+    df['2hr_serum_insulin'].replace(to_replace=[0], value=[modes[4]], inplace=True)
+    df['bmi'].replace(to_replace=[0], value=[modes[5]], inplace=True)
+    df['diabetes_pedigree_function'].replace(to_replace=[0], value=[modes[6]], inplace=True)
+    df['age'].replace(to_replace=[0], value=[modes[7]], inplace=True)
+
+    # convert the dataframe to a numpy array
+    array = df.values
+
+    # return the train data and the target data from the array
+    # the first returns all columns but the last column
+    # the last returns just the last column
+    return array[:, :-1], array[:, -1]
 
 
 def get_data_automobile_mpg():
@@ -118,9 +131,15 @@ def get_data_automobile_mpg():
     df = pd.read_csv("Datasets/Automobile_MPG.txt",
                      header=None,
                      names=headers,
-                     na_values="?",
                      delim_whitespace=True,
                      index_col=False)
+
+    # returns the mode of each column
+    modes = df.mode().values[0]
+
+    # replace missing value in the horsepower column with the mode of the column
+    df['horsepower'].replace(to_replace=['?'], value=[float(modes[3])], inplace=True)
+    df = df.convert_objects(convert_numeric=True)
 
     # Need to move mpg to be the last column and drop the car_names
     # column, as it does not provide valuable information
@@ -128,13 +147,50 @@ def get_data_automobile_mpg():
                      "acceleration", "model_year", "origin", "mpg"]
     df = df.reindex(columns=column_titles)
 
-    return df.values, np.zeros(1)
+    # convert the dataframe to a numpy array
+    array = df.values
+
+    # return the train data and the target data from the array
+    # the first returns all columns but the last column
+    # the last returns just the last column
+    return array[:, :-1], array[:, -1]
 
 
 def main():
-    data_set_car_evaluation, target_set_car_evaluation = get_data_uci_car_evaluation()
-    data_set_pima_indians_diabetes, target_set_pima_indians_diabetes = get_data_pima_indians_diabetes()
-    data__set_automobile_mpg, target_set_automobile_mpg = get_data_automobile_mpg()
+    # Display available options to the user
+    print("Available datasets:")
+    print("Enter 1 for Automobile MPG")
+    print("Enter 2 for Pima Indians Diabetes")
+    print("Enter 3 for UCI Car Evaluation")
+    print()
+    choice = input("Which predictive method would you like to use:")
+
+    # Execute a function dependent on user input
+    if choice == "1":
+        data_set, target_set = get_data_automobile_mpg()
+    elif choice == "2":
+        data_set, target_set = get_data_pima_indians_diabetes()
+    elif choice == "3":
+        data_set, target_set = get_data_uci_car_evaluation()
+    else:
+        print("Invalid input.")
+        exit()
+
+    data_train, data_test, target_train, target_test = \
+        train_test_split(data_set,
+                         target_set,
+                         test_size=0.3,
+                         train_size=0.7,
+                         shuffle=True)
+
+    classifier = KNNClassifier()
+    model = classifier.fit(data_train, target_train)
+
+    print(data_test)
+    # get predicted targets
+    knn_targets_predicted = model.predict(data_test)
+    custom_algorithm_accuracy = get_accuracy(knn_targets_predicted, target_test) * 100.0
+    print("Custom Algorithm was %.3f percent accurate." % custom_algorithm_accuracy)
 
 
 # While not required, it is considered good practice to have
