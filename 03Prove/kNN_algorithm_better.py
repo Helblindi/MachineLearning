@@ -201,8 +201,24 @@ def main():
     else:
         print("They are one in the same.")
 
+    # apply CV to data with kerenel = "rbf"
+    classifier = svm.SVC(kernel="rbf", C=1)
+    scores = cross_val_score(classifier, data_set, target_set, cv=10)
+
+    # print normalization
+    print("Radial Basis Function Accuracy: {:.2f} (+/- {:.2f})".format(scores.mean(), scores.std() * 2))
+
+    # apply CV to data with kerenel = "linear"
+    classifier = svm.SVC(kernel="linear", C=1)
+    scores = cross_val_score(classifier, data_set, target_set, cv=10)
+
+    # print normalization
+    print("Linear Accuracy: {:.2f} (+/- {:.2f})".format(scores.mean(), scores.std() * 2))
+
 
 # While not required, it is considered good practice to have
 # a main function and use this syntax to call it.
 if __name__ == "__main__":
     main()
+
+# Collaborated with Zac Benning and Josh Backstein
