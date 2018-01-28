@@ -90,7 +90,7 @@ def get_data_uci_car_evaluation():
     df['lug_boot'].replace(to_replace=['small', 'med', 'big'], value=[1.0, 2.0, 3.0], inplace=True)
     df['safety'].replace(to_replace=['low', 'med', 'high'], value=[1.0, 2.0, 3.0], inplace=True)
 
-    return df.values
+    return df.values, np.zeros(1)
 
 
 def get_data_pima_indians_diabetes():
@@ -109,7 +109,7 @@ def get_data_pima_indians_diabetes():
     df['diabetes_pedigree_function'].replace(to_replace=[0], value=[np.nan], inplace=True)
     df['age'].replace(to_replace=[0], value=[np.nan], inplace=True)
 
-    return df.values
+    return df.values, np.zeros(1)
 
 
 def get_data_automobile_mpg():
@@ -128,13 +128,13 @@ def get_data_automobile_mpg():
                      "acceleration", "model_year", "origin", "mpg"]
     df = df.reindex(columns=column_titles)
 
-    return df.values
+    return df.values, np.zeros(1)
 
 
 def main():
-    data_car_evaluation = get_data_uci_car_evaluation()
-    data_pima_indians_diabetes = get_data_pima_indians_diabetes()
-    data_automobile_mpg = get_data_automobile_mpg()
+    data_set_car_evaluation, target_set_car_evaluation = get_data_uci_car_evaluation()
+    data_set_pima_indians_diabetes, target_set_pima_indians_diabetes = get_data_pima_indians_diabetes()
+    data__set_automobile_mpg, target_set_automobile_mpg = get_data_automobile_mpg()
 
 
 # While not required, it is considered good practice to have
