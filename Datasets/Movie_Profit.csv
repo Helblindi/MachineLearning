@@ -1,0 +1,7 @@
+Comedy,Deep,Yes,Low
+Comedy,Shallow,Yes,High
+Drama,Deep,Yes,High
+Drama,Shallow,No,Low
+Comedy,Deep,No,High
+Comedy,Shallow,No,High
+Drama,Deep,No,Low
