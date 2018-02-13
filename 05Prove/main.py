@@ -18,53 +18,6 @@ def get_accuracy(predicted, expected):
     return (total - incorrect) / total
 
 
-def calc_info_gain_book(data,classes,feature):
-    gain = 0
-    nData = len(data)
-    # List the values that feature can take
-    values = []
-    for datapoint in data:
-        if datapoint[feature] not in values:
-            values.append(datapoint[feature])
-
-    featureCounts = np.zeros(len(values))
-    entropy = np.zeros(len(values))
-    valueIndex = 0
-
-    # Find where those values appear in data[feature] and the corresponding class
-    for value in values:
-        dataIndex = 0
-        newClasses = []
-        for datapoint in data:
-            if datapoint[feature] == value:
-                featureCounts[valueIndex] += 1
-                newClasses.append(classes[dataIndex])
-            dataIndex += 1
-
-        # Get the values in newClasses
-        classValues = []
-        for aclass in newClasses:
-            if classValues.count(aclass) == 0:
-                classValues.append(aclass)
-
-        classCounts = np.zeros(len(classValues))
-        classIndex = 0
-        for classValue in classValues:
-            for aclass in newClasses:
-                if aclass == classValue:
-                    classCounts[classIndex] += 1
-            classIndex += 1
-
-        for classIndex in range(len(classValues)):
-            entropy[valueIndex] += calc_entropy(float(classCounts[classIndex]) / sum(classCounts))
-            print(classCounts[classIndex])
-            #print(calc_entropy(float(classCounts[classIndex]) / sum(classCounts)))
-        gain += float(featureCounts[valueIndex]) / nData * entropy[valueIndex]
-        valueIndex += 1
-
-    return gain
-
-
 def calc_info_gain(data, classes, feature):
     # Get data for this specific feature
     feature_data = data[:, feature]
@@ -101,9 +54,57 @@ def calc_entropy(data):
     # convert 1d array to a pandas series
     data = pd.Series(data)
     p_data = data.value_counts()/len(data)  # calculates the probabilities
-    # defaults to natural log for calculating entropy
+    # defaults to natural log for calculating entropy, change base to 2
     entropy = sc.stats.entropy(p_data, base=2)  # input probabilities to get the entropy
     return entropy
+
+
+def make_tree(data, classes, feature_names):
+    # initialisations
+    n_data = len(data)
+    n_features = len(feature_names)
+
+    # https://stackoverflow.com/questions/6252280/find-the-most-frequent-number-in-a-numpy-vector
+    (classes_values, classes_counts) = np.unique(classes, return_counts=True)
+    ind = np.argmax(classes_counts)
+    default = classes_values[ind]
+
+    if n_data == 0 or n_features == 0:
+        return default
+    elif ind == len(classes):
+        # only one class remains
+        return default
+    else:
+        # choose which feature is best
+        gain = np.zeros(n_features)
+        for feature in range(n_features):
+            gain[feature] = calc_info_gain(data, classes, feature)
+        best_feature = np.argmax(gain)
+        tree = {feature_names[best_feature]:{}}
+        # Find the possible feature values
+        (best_feature_values, best_feature_counts) = np.unique(best_feature, return_counts=True)
+        for value in best_feature_values:
+            for data_point in data:
+                if data_point[best_feature] == value:
+                    if best_feature == 0:
+                        data_point = data_point[1:]
+                        new_names = feature_names[1:]
+                    elif best_feature == n_features:
+                        data_point = data_point[:-1]
+                        new_names = feature_names[:-1]
+                    else:
+                        data_point = data_point[:best_feature]
+                        data_point.extend(data_point[best_feature+1:])
+                        new_names = feature_names[:best_feature]
+                        new_names.extend(feature_names[best_feature+1:])
+                    newData.append(data_point)
+                    newClasses.append(classes[index])
+                index += 1
+            # now recurse to the next level
+            subtree = make_tree(newData, newClasses, new_names)
+            # And on returning, add the subtree on to the tree
+            tree[feature_names[best_feature]][value] = subtree
+        return tree
 
 
 def get_data_uci_car_evaluation():
@@ -188,14 +189,18 @@ def main():
     df = get_data_movie_profit()
     data = df.values[:, :-1]
     targets = df.values[:, -1]
+    # get a list of the headers from the dataframe
+    feature_names = list(df)
+    feature_names = feature_names[:-1]
 
     info_gainz = []
     for i in range(len(data[0])):
         gainz = calc_info_gain(data, targets, i)
-        print(gainz)
         info_gainz.append(gainz)
 
     print(info_gainz)
+
+    make_tree(data, targets, feature_names)
 
     return 0
 
@@ -205,6 +210,8 @@ def main():
 if __name__ == "__main__":
     main()
 
+
+# Worked with Josh Backstein and Zach Benning
 
 # Notes
 """

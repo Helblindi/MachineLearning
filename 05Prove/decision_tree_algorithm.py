@@ -1,10 +1,11 @@
 class DecisionTreeClassifier:
 
-    def do_something(self):
-        return 0
+    def fit(self, data, targets):
+        return DecisionTreeModel(data, targets)
 
 
-def calc_entropy():
-    return 0
-
-
+class DecisionTreeModel:
+    def __init__(self, data, targets):
+        self.k = 5
+        self.data = data
+        self.targets = targets
