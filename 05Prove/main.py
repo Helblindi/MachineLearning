@@ -186,7 +186,8 @@ def get_data_movie_profit():
 
 def main():
     # Need to change the working directory to access the datasets folder
-    df = get_data_movie_profit()
+    #df = get_data_movie_profit()
+    df = get_data_uci_car_evaluation()
     data = df.values[:, :-1]
     targets = df.values[:, -1]
     # get a list of the headers from the dataframe
