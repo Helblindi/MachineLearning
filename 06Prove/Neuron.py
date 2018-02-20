@@ -1,27 +1,21 @@
+import random
+
+
 # definition for our Neuron Class
 class Neuron:
-    def __init__(self, weights=None):
-        return self
+    def __init__(self, n_inputs):
+        self.n_inputs = n_inputs
+        self.set_weights([random.uniform(-0.5, 0.5) for x in range(0, n_inputs + 1)])  # +1 for bias weight
+
+    def sum(self, inputs):
+        # Does not include the bias
+        return sum(val * self.weights[i] for i, val in enumerate(inputs))
+
+    def set_weights(self, weights):
+        self.weights = weights
+
+    def __str__(self):
+        return 'Weights: %s, Bias: %s' % (str(self.weights[:-1]), str(self.weights[-1]))
 
 
-"""
-This Weeks Assignment
-1) Create some type of data structure to hold a node (a.k.a. neuron).
-
-2) Store the set of input weights for each node.
-
-3) Provide a way to create a layer of nodes of any number (this should be easily specified via a parameter).
-
-4) Account for a bias input.
-
-5) Be able to take input from a dataset instance (with an arbitrary number of attributes) and have each node produce an output (i.e., 0 or 1) according to its weights.
-
-6) Be able to load and process at least the following two datasets:
-
-    - Iris (You didn't think we could leave this out did you!)
-
-    - Pima Indian Diabetes
-
-7) You should appropriately normalize each data set.
-"""
 # end of Neuron Class
