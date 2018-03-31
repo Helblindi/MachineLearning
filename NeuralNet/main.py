@@ -39,7 +39,7 @@ def main():
                          shuffle=True)
 
     # Fit the model
-    model = PerceptronModel()
+    model = NeuralNetModel()
     iris_history_h1 = model.fit(data_train,
                                 target_train,
                                 hidden_layers=iris_hidden,
@@ -99,7 +99,7 @@ def main():
                          shuffle=True)
 
     # Fit the model
-    pima_model = PerceptronModel()
+    pima_model = NeuralNetModel()
     pima_history_h1 = pima_model.fit(data_train,
                                      target_train,
                                      hidden_layers=pima_hidden,

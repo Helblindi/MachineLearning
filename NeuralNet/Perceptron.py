@@ -26,13 +26,13 @@ class Perceptron:
                 if _i != 0:
                     input_size = node_num_list[_i - 1]
 
-            self.layers.append(PerceptronLayer(hidden_nodes,
+            self.layers.append(NeuralNetLayer(hidden_nodes,
                                                input_size,
                                                use_bias,
                                                bias_value))
             input_size = hidden_nodes
 
-        self.output_layer = PerceptronLayer(output_nodes,
+        self.output_layer = NeuralNetLayer(output_nodes,
                                             input_size,
                                             use_bias,
                                             bias_value)
@@ -57,7 +57,7 @@ class Perceptron:
         return self.output_layer.simulate(input_values)
 
 
-class PerceptronLayer:
+class NeuralNetLayer:
     def __init__(self,
                  number_of_nodes,
                  input_size,
@@ -87,7 +87,7 @@ class PerceptronLayer:
         return np.array(results)
 
 
-class PerceptronModel:
+class NeuralNetModel:
     def fit(self,
             training_data,
             training_targets,
