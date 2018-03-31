@@ -65,7 +65,24 @@ def get_data_automobile_mpg():
     df.dropna(inplace=True)
 
     # return the dataframe
-    return df
+    return df.values[:, :-1], df.values[:, -1]
+
+
+def get_data_iris():
+    headers = ["sepal len", "sepal width","petal len", "petal width", "class"]
+    df = pd.read_csv("../Datasets/FlowerData.txt",
+                     header=None,
+                     names=headers,
+                     na_values='?',
+                     delim_whitespace=True,
+                     index_col=False)
+
+    df['class'].replace(to_replace=["Iris-setosa"], value=[int(0)], inplace=True)
+    df['class'].replace(to_replace=["Iris-versicolor"], value=[int(1)], inplace=True)
+    df['class'].replace(to_replace=["Iris-virginica"], value=[int(2)], inplace=True)
+
+    # return the dataframe
+    return df.values[:, :-1], df.values[:, -1]
 
 
 def get_data_movie_profit():
@@ -76,4 +93,4 @@ def get_data_movie_profit():
                      index_col=False)
 
     # return the dataframe
-    return df
+    return df.values[:, :-1], df.values[:, -1]
