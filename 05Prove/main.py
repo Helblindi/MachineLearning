@@ -56,6 +56,7 @@ def calc_entropy(data):
     p_data = data.value_counts()/len(data)  # calculates the probabilities
     # defaults to natural log for calculating entropy, change base to 2
     entropy = sc.stats.entropy(p_data, base=2)  # input probabilities to get the entropy
+    print('entropy: ', entropy)
     return entropy
 
 
