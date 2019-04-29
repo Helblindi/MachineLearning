@@ -185,10 +185,27 @@ def get_data_movie_profit():
     return df
 
 
+def get_data_iris():
+    headers = ["sepal len", "sepal width","petal len", "petal width", "class"]
+    df = pd.read_csv("../Datasets/FlowerData.txt",
+                     header=None,
+                     names=headers,
+                     na_values='?',
+                     delim_whitespace=True,
+                     index_col=False)
+
+    df['class'].replace(to_replace=["Iris-setosa"], value=[int(0)], inplace=True)
+    df['class'].replace(to_replace=["Iris-versicolor"], value=[int(1)], inplace=True)
+    df['class'].replace(to_replace=["Iris-virginica"], value=[int(2)], inplace=True)
+
+    # return the dataframe
+    return df.values[:, :-1], df.values[:, -1]
+
+
 def main():
     # Need to change the working directory to access the datasets folder
     #df = get_data_movie_profit()
-    df = get_data_uci_car_evaluation()
+    df = get_data_iris()
     data = df.values[:, :-1]
     targets = df.values[:, -1]
     # get a list of the headers from the dataframe
