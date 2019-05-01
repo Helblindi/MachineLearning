@@ -30,7 +30,7 @@ def complex_seemless_cloning():
 
 
 def main():
-    complex_seemless_cloning()
+    simple_seemless_cloning()
 
 
 # While not required, it is considered good practice to have
